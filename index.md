@@ -33,6 +33,8 @@ title: Home | Zhou Ye
 
 ## About Me
 
+<!-- <img src="yz-43.jpg" alt="Zhou Ye" style="width: 15%; float: right; margin: 0 0 0.8em 1.5em; box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);"> -->
+
 Hi! I'm an incoming CS PhD student at the University of Pittsburgh advised by Prof. [Xulong Tang](https://xzt102.github.io/).
 
 ## Education

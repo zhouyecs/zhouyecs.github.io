@@ -1,6 +1,6 @@
 :root {
     color-scheme: light;
-    --bg: #F5F4ED;
+    --bg: #FAF9F5;
     --text: #2c3e50;
     --heading: #2c3e50;
     --subheading: #34495e;
@@ -177,6 +177,13 @@ p {
 .markdown-content pre code {
     padding: 0;
     background: transparent;
+}
+.markdown-content {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.markdown-content.transitioning {
+    opacity: 0;
+    transform: translateY(6px);
 }
 footer {
     border-top: 1px solid var(--rule);

@@ -91,5 +91,85 @@
                 });
               })();
             </script>
+            <script>
+              (function() {
+                var main = document.querySelector('main.markdown-content');
+                var navLinks = document.querySelectorAll('nav ul li a');
+                if (!main) return;
+
+                function getPage(url, callback) {
+                  fetch(url)
+                    .then(function(response) {
+                      if (!response.ok) throw new Error('HTTP ' + response.status);
+                      return response.text();
+                    })
+                    .then(function(html) {
+                      var parser = new DOMParser();
+                      var doc = parser.parseFromString(html, 'text/html');
+                      var newMain = doc.querySelector('main.markdown-content');
+                      if (!newMain) throw new Error('No main content found');
+                      callback(null, { content: newMain.innerHTML, title: doc.title });
+                    })
+                    .catch(function(err) {
+                      callback(err);
+                    });
+                }
+
+                function setActiveLink(url) {
+                  navLinks.forEach(function(link) {
+                    link.classList.remove('active');
+                    var href = link.getAttribute('href');
+                    if (href === url || (href !== '/' && url.indexOf(href) === 0)) {
+                      link.classList.add('active');
+                    }
+                  });
+                }
+
+                function navigate(url, addToHistory) {
+                  main.classList.add('transitioning');
+                  getPage(url, function(err, data) {
+                    if (err) {
+                      main.classList.remove('transitioning');
+                      window.location.href = url;
+                      return;
+                    }
+                    setTimeout(function() {
+                      main.innerHTML = data.content;
+                      document.title = data.title;
+                      window.scrollTo(0, 0);
+                      if (addToHistory !== false) {
+                        history.pushState({ url: url }, data.title, url);
+                      }
+                      setActiveLink(url);
+                      main.classList.remove('transitioning');
+                      // Track pageview in Google Analytics
+                      if (typeof gtag === 'function') {
+                        gtag('config', 'G-5RMR47M0J3', { page_path: url });
+                      }
+                    }, 160);
+                  });
+                }
+
+                navLinks.forEach(function(link) {
+                  link.addEventListener('click', function(e) {
+                    var href = link.getAttribute('href');
+                    if (!href || href.indexOf('http') === 0 || href.indexOf('mailto:') === 0 || link.getAttribute('target') === '_blank') return;
+                    e.preventDefault();
+                    navigate(href, true);
+                  });
+                });
+
+                window.addEventListener('popstate', function(e) {
+                  if (e.state && e.state.url) {
+                    navigate(e.state.url, false);
+                  }
+                });
+
+                // Store initial state so back button works from the start
+                if (!history.state) {
+                  history.replaceState({ url: window.location.pathname }, document.title, window.location.href);
+                }
+              })();
+            </script>
         </body>
     </html>
